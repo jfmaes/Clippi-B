@@ -3,6 +3,8 @@
 Steals clipboard data written in c#, executable by cobalt-strike or any other unmanaged CLR loader. 
 you'll need fody NuGet package to compile.
 
+It's intelligent enough to not spam you when the clipboard content is the same. will only display new clipboard content.
+
 ```
          .__    .__                    .__           __________
   ____   |  |   |__| ______   ______   |__|          \______   \
