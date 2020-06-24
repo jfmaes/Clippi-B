@@ -18,6 +18,7 @@ namespace Clippi_B
         [STAThread]
         static void Main(string[] args)
         {
+            Info.Showbanner();
             Boolean text,help = false;
             string clipboardtext,previousclipboardtext = "";
             int interval = 5;
@@ -47,8 +48,6 @@ namespace Clippi_B
 
             Stopwatch monitortimer = new Stopwatch();
             Stopwatch intervaltimer = new Stopwatch();
-
-            Info.Showbanner();
             Console.WriteLine("Monitoring the clipboard has been initialized! The clipboard will be analyzed every {0} seconds for {1} minutes ",interval,monitor);
             while (monitortimer.Elapsed.TotalMinutes < monitor)
             {
