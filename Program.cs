@@ -1,26 +1,29 @@
-﻿using System;
+﻿using NDesk.Options;
+using System;
+using System.Threading;
 using System.Diagnostics;
 using System.Windows;
-using NDesk.Options;
-
-
+using System.Timers;
+using System.Runtime.Remoting.Messaging;
 
 namespace Clippi_B
 {
     class Program
     {
+    
+
+        
+
         public static void ShowHelp(OptionSet p)
         {
             Console.WriteLine("Usage:");
             p.WriteOptionDescriptions(Console.Out);
         }
 
-        [STAThread]
         static void Main(string[] args)
         {
+            Boolean help = false;
             Info.Showbanner();
-            Boolean text,help = false;
-            string clipboardtext,previousclipboardtext = "";
             int interval = 5;
             int monitor = 480;
             var options = new OptionSet(){
@@ -46,27 +49,51 @@ namespace Clippi_B
                 return;
             }
 
-            Stopwatch monitortimer = new Stopwatch();
-            Stopwatch intervaltimer = new Stopwatch();
-            Console.WriteLine("Monitoring the clipboard has been initialized! The clipboard will be analyzed every {0} seconds for {1} minutes ",interval,monitor);
-            while (monitortimer.Elapsed.TotalMinutes < monitor)
+            //minutes * 60 (seconds) / interval
+            int timestorun = (monitor * 60) / interval;
+            string oldclipboardcontent = "";
+            
+
+            for (int i = 0; i < timestorun; i++)
             {
-                intervaltimer.Start();
-                if (intervaltimer.Elapsed.TotalSeconds == interval)
-                {
-                    text = Clipboard.ContainsText();
-                    if (text)
-                    {
-                        clipboardtext = Clipboard.GetText(TextDataFormat.Text);
-                        if(clipboardtext !=previousclipboardtext)
-                        {Console.WriteLine("Clipboard contains text! contents:\n" + clipboardtext); }
-                        previousclipboardtext=clipboardtext;
-                        intervaltimer.Reset();
-                    }
-                }
+                Thread StaThread = new Thread(() => {
+                oldclipboardcontent = Clippi(oldclipboardcontent);
+            });
+                StaThread.SetApartmentState(ApartmentState.STA);
+                StaThread.Start();
+                Thread.Sleep(interval * 1000);
             }
-            monitortimer.Stop();
-            intervaltimer.Stop();
+            
         }
+
+        public static string Clippi(string previousclipboardtext)
+        {
+            Boolean text = false;
+            string clipboardtext = "";
+            if(String.IsNullOrEmpty(previousclipboardtext))
+                previousclipboardtext = "";
+            try
+            {
+                    text = Clipboard.ContainsText();
+                if (text)
+                {
+                    clipboardtext = Clipboard.GetText(TextDataFormat.Text);
+                    if (clipboardtext != previousclipboardtext)
+                    { Console.WriteLine("Clipboard contains text! contents:\n" + clipboardtext); }
+                    previousclipboardtext = clipboardtext;
+                    return clipboardtext;
+                }
+                    
+                }
+            catch (Exception ex)
+            { Console.WriteLine("ERROR:" + ex); } 
+            return "";
+
+        }
+         
+
     }
+        
 }
+
+
