@@ -1,7 +1,7 @@
 # Clippi-B
 
 Steals clipboard data written in c#, executable by cobalt-strike or any other unmanaged CLR loader. 
-you'll need fody NuGet package to compile.
+you'll need costura.fody NuGet package to compile. Targets .NET 4.0 or above, but is potentially backwards compatible with 3.5 if you use an older costura fody NuGet (untested)
 
 It's intelligent enough to not spam you when the clipboard content is the same. will only display new clipboard content.
 
